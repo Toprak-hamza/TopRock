@@ -18,10 +18,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "RockSolid Edu",
-    template: "%s · RockSolid Edu",
+    default: "BitigEdu",
+    template: "%s · BitigEdu",
   },
-  description: "RockSolid Edu — modern eğitim platformu",
+  description: "BitigEdu — modern eğitim platformu",
 };
 
 export const viewport: Viewport = {

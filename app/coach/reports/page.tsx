@@ -146,7 +146,7 @@ export default function ReportsPage() {
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
       pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`RockSolid_Veli_Raporu_${student?.name || 'Ogrenci'}.pdf`);
+      pdf.save(`BitigEdu_Veli_Raporu_${student?.name || 'Ogrenci'}.pdf`);
       
     } catch (error) {
       console.error(error);
@@ -287,7 +287,7 @@ export default function ReportsPage() {
             {/* Header / Letterhead */}
             <div className="border-b-4 border-emerald-600 pb-6 mb-8 flex justify-between items-end">
               <div>
-                <h1 className="text-3xl font-black tracking-tighter text-emerald-950 uppercase">ROCK<span className="text-emerald-600">SOLID</span> EDU</h1>
+                <h1 className="text-3xl font-black tracking-tighter text-emerald-950 uppercase">BITIG<span className="text-emerald-600">EDU</span></h1>
                 <p className="text-emerald-800 font-semibold mt-1">HAFTALIK GELİŞİM RAPORU</p>
               </div>
               <div className="text-right text-sm text-gray-500">
@@ -376,7 +376,7 @@ export default function ReportsPage() {
 
             {/* Footer */}
             <div className="mt-16 pt-6 border-t border-gray-200 text-center">
-              <p className="text-xs text-gray-400">Bu rapor RockSolid Edu Sistemi tarafından otomatik oluşturulmuştur.</p>
+              <p className="text-xs text-gray-400">Bu rapor BitigEdu Sistemi tarafından otomatik oluşturulmuştur.</p>
             </div>
             
           </div>

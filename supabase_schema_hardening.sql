@@ -1,4 +1,4 @@
--- ROCKSOLID EDU SUPABASE RLS HARDENING SCRIPT
+-- BITIGEDU SUPABASE RLS HARDENING SCRIPT
 -- Bu scripti Supabase Dashboard SQL Editor üzerinde çalıştırabilirsiniz.
 
 -- 1. ROW LEVEL SECURITY (RLS) ETKİNLEŞTİRME

@@ -156,7 +156,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full rounded-lg border border-border bg-background py-2 pl-10 pr-4 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            placeholder={role === "coach" ? "coach@rocksolid.com" : "ogrenci@okul.com"}
+            placeholder={role === "coach" ? "coach@bitigedu.com" : "ogrenci@okul.com"}
             required
             disabled={loading}
           />
@@ -212,7 +212,7 @@ export default function LoginPage() {
             value={regCode}
             onChange={(e) => setRegCode(e.target.value.toUpperCase())}
             className="w-full rounded-lg border border-border bg-background py-2 pl-10 pr-4 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary uppercase"
-            placeholder="Örn: RS-X7T9Q"
+            placeholder="Örn: BE-X7T9Q"
             required
             maxLength={9}
             disabled={loading}
@@ -298,7 +298,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
             <BookOpen className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">RockSolid Edu</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">BitigEdu</h1>
           <p className="text-sm text-muted-foreground mt-2">Sisteme giriş yapın veya kayıt olun</p>
         </div>
 

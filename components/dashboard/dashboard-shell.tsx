@@ -128,7 +128,7 @@ export function DashboardShell({
         <div className="border-b border-white/10 px-5 py-5 flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-              RockSolid
+              BitigEdu
             </p>
             <p className="mt-0.5 text-lg font-semibold tracking-tight text-white">
               Öğrenci Paneli

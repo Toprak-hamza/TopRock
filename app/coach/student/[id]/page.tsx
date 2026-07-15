@@ -76,7 +76,7 @@ export default function StudentProfilePage() {
   const [badgeLoading, setBadgeLoading] = useState(false);
 
   const loadData = async (targetStudent: User) => {
-    const matrixDataStr = localStorage.getItem("rocksolid_matrix_progress");
+    const matrixDataStr = localStorage.getItem("bitigedu_matrix_progress");
     if (matrixDataStr) {
       const matrixData = JSON.parse(matrixDataStr);
       setMatrixProgress(matrixData[targetStudent.id] || 0);

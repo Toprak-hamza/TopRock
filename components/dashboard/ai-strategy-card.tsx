@@ -22,8 +22,8 @@ export function AiStrategyCard() {
 
   useEffect(() => {
     loadData();
-    window.addEventListener("rocksolid_data_change", loadData);
-    return () => window.removeEventListener("rocksolid_data_change", loadData);
+    window.addEventListener("bitigedu_data_change", loadData);
+    return () => window.removeEventListener("bitigedu_data_change", loadData);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 

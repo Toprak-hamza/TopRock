@@ -22,13 +22,13 @@ export function StudentCard({ student, invitation, onDeleteInvitation }: Student
   useEffect(() => {
     if (student) {
       if (typeof window !== "undefined") {
-        const matrixDataStr = localStorage.getItem("rocksolid_matrix_progress");
+        const matrixDataStr = localStorage.getItem("bitigedu_matrix_progress");
         if (matrixDataStr) {
           const matrixData = JSON.parse(matrixDataStr);
           setProgress(matrixData[student.id] || 0);
         }
 
-        const examsStr = localStorage.getItem("rocksolid_exams");
+        const examsStr = localStorage.getItem("bitigedu_exams");
         if (examsStr) {
           const examsData = JSON.parse(examsStr);
           const studentExams = examsData[student.id];

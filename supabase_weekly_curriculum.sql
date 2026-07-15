@@ -1,4 +1,4 @@
--- ROCKSOLID EDU WEEKLY CURRICULUM SCHEMA & SECURITY POLICY
+-- BITIGEDU WEEKLY CURRICULUM SCHEMA & SECURITY POLICY
 -- Bu scripti Supabase Dashboard SQL Editor üzerinde çalıştırarak tabloları oluşturabilirsiniz.
 
 -- 1. TABLOLARIN OLUŞTURULMASI

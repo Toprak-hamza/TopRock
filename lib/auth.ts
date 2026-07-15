@@ -286,7 +286,7 @@ export async function getAuthenticatedUser(): Promise<User | null> {
 // Kept synchronous placeholder initially, but components should use Auth hooks
 export function logout() {
   supabase.auth.signOut();
-  if (typeof window !== 'undefined') window.dispatchEvent(new Event('rocksolid_auth_change'));
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('bitigedu_auth_change'));
 }
 
 export async function getUsers(): Promise<User[]> {
@@ -330,7 +330,7 @@ export function generateReferralCode(): string {
   for (let i = 0; i < 6; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return `RS-${result}`;
+  return `BE-${result}`;
 }
 
 export async function getHomeworks(studentId?: string, coachId?: string): Promise<Homework[]> {
