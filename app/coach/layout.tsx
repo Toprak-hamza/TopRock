@@ -39,7 +39,7 @@ export default function CoachLayout({ children }: { children: React.ReactNode })
       {/* Mobile Menu Backdrop */}
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
@@ -47,7 +47,7 @@ export default function CoachLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex h-dvh w-64 shrink-0 flex-col border-r border-border bg-card transition-transform duration-300 ease-in-out md:translate-x-0 absolute md:static",
+          "fixed inset-y-0 left-0 z-[100] flex h-dvh w-64 shrink-0 flex-col border-r border-border bg-card transition-transform duration-300 ease-in-out md:translate-x-0 md:static",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >

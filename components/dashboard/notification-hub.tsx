@@ -130,7 +130,7 @@ export function NotificationHub() {
 
       {/* Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 rounded-xl border border-border bg-card/95 p-2 shadow-xl backdrop-blur-md z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 rounded-xl border border-border bg-card/95 p-2 shadow-xl backdrop-blur-md z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border/50 px-3 py-2">
             <span className="font-semibold text-sm">Bildirimler</span>
