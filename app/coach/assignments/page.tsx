@@ -14,6 +14,7 @@ export default function CoachAssignmentsPage() {
   const [homeworks, setHomeworks] = useState<Homework[]>([]);
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedFilterStudentId, setSelectedFilterStudentId] = useState<string>("");
 
   // Form State
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
@@ -506,20 +507,47 @@ export default function CoachAssignmentsPage() {
         </section>
 
         <section className="rounded-xl border border-border bg-card p-6 shadow-sm overflow-hidden flex flex-col h-[600px]">
-          <div className="flex items-center gap-2 mb-6 border-b border-border/50 pb-4">
-            <Calendar className="size-5 text-accent" />
-            <h2 className="text-lg font-semibold tracking-tight">Atanmış Ödevler</h2>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-border/50 pb-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="size-5 text-accent" />
+              <h2 className="text-lg font-semibold tracking-tight">Atanmış Ödevler</h2>
+            </div>
+
+            {/* Öğrenci Filtresi */}
+            <div className="flex items-center gap-2">
+              <label htmlFor="filter-student" className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+                Öğrenci:
+              </label>
+              <select
+                id="filter-student"
+                value={selectedFilterStudentId}
+                onChange={(e) => setSelectedFilterStudentId(e.target.value)}
+                className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary outline-none max-w-[180px]"
+              >
+                <option value="">Tümü</option>
+                {students.map(s => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto pr-2 space-y-3">
-            {homeworks.length === 0 ? (
+            {homeworks.filter(hw => !selectedFilterStudentId || hw.studentId === selectedFilterStudentId).length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center h-48 opacity-50">
                 <ListChecks className="size-10 mb-2" />
-                <p className="text-sm">Henüz bir ödev atamadınız.</p>
+                <p className="text-sm">
+                  {selectedFilterStudentId 
+                    ? "Seçilen öğrenciye ait ödev bulunmuyor." 
+                    : "Henüz bir ödev atamadınız."}
+                </p>
               </div>
             ) : (
               <AnimatePresence>
-                {homeworks.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(hw => {
+                {homeworks
+                  .filter(hw => !selectedFilterStudentId || hw.studentId === selectedFilterStudentId)
+                  .sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                  .map(hw => {
                   const studentName = students.find(s => s.id === hw.studentId)?.name || "Bilinmiyor";
                   
                   const isChampion = hw.completed && hw.correctCount !== undefined && hw.incorrectCount !== undefined && hw.emptyCount !== undefined && 

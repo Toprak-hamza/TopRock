@@ -21,8 +21,12 @@ export function NotificationHub() {
     try {
       const data = await getNotifications(user.id);
       if (user.role === "coach") {
-        // Coach only sees student messages
-        setNotifications(data.filter(n => n.type === "student_message"));
+        // Coach sees student messages, task completions, and homework completions
+        setNotifications(data.filter(n => 
+          n.type === "student_message" || 
+          n.type === "task_completed" || 
+          n.type === "homework_completed"
+        ));
       } else {
         setNotifications(data);
       }

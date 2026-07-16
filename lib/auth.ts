@@ -384,7 +384,7 @@ export async function saveHomework(hw: Partial<Homework>) {
 }
 
 export async function updateHomeworkStatus(id: string, completed: boolean) {
-  const { data: hw } = await supabase.from('homeworks').select('student_id, completed').eq('id', id).single();
+  const { data: hw } = await supabase.from('homeworks').select('student_id, coach_id, subject, completed').eq('id', id).single();
   
   if (!completed) {
     await supabase.from('homeworks').update({ completed, correct_count: null, incorrect_count: null, empty_count: null }).eq('id', id);
@@ -392,12 +392,35 @@ export async function updateHomeworkStatus(id: string, completed: boolean) {
     await supabase.from('homeworks').update({ completed }).eq('id', id);
     if (hw && !hw.completed) {
       await awardStudentXP(hw.student_id, 50);
+
+      // Trigger notification to coach
+      if (hw.coach_id) {
+        try {
+          const { data: studentProfile } = await supabase
+            .from('profiles')
+            .select('name')
+            .eq('id', hw.student_id)
+            .single();
+          const studentName = studentProfile?.name || 'Bir öğrenci';
+
+          await supabase.from('notifications').insert({
+            user_id: hw.coach_id,
+            student_id: hw.student_id,
+            title: `${studentName} Ödevini Tamamladı`,
+            message: `${studentName}, '${hw.subject}' ödevini tamamladı.`,
+            type: 'homework_completed',
+            link: `/coach/student/${hw.student_id}`
+          });
+        } catch (e) {
+          console.error("Error creating homework completion notification:", e);
+        }
+      }
     }
   }
 }
 
 export async function updateHomeworkAnalysis(id: string, correct: number, incorrect: number, empty: number) {
-  const { data: hw } = await supabase.from('homeworks').select('student_id, completed').eq('id', id).single();
+  const { data: hw } = await supabase.from('homeworks').select('student_id, coach_id, subject, completed').eq('id', id).single();
 
   const { error } = await supabase.from('homeworks').update({ 
     completed: true,
@@ -413,6 +436,29 @@ export async function updateHomeworkAnalysis(id: string, correct: number, incorr
 
   if (hw && !hw.completed) {
     await awardStudentXP(hw.student_id, 50);
+
+    // Trigger notification to coach
+    if (hw.coach_id) {
+      try {
+        const { data: studentProfile } = await supabase
+          .from('profiles')
+          .select('name')
+          .eq('id', hw.student_id)
+          .single();
+        const studentName = studentProfile?.name || 'Bir öğrenci';
+
+        await supabase.from('notifications').insert({
+          user_id: hw.coach_id,
+          student_id: hw.student_id,
+          title: `${studentName} Ödev Analizini Girdi`,
+          message: `${studentName}, '${hw.subject}' ödevinin analizini girdi: ${correct} Doğru, ${incorrect} Yanlış, ${empty} Boş.`,
+          type: 'homework_completed',
+          link: `/coach/student/${hw.student_id}`
+        });
+      } catch (e) {
+        console.error("Error creating homework analysis notification:", e);
+      }
+    }
   }
 }
 
@@ -958,13 +1004,27 @@ export async function markAllNotificationsAsRead(userId: string) {
 export async function sendCoachMessage(studentId: string, coachId: string, message: string) {
   const cleanMessage = sanitizeText(message);
   
+  let studentName = 'Bir öğrenci';
+  try {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('name')
+      .eq('id', studentId)
+      .single();
+    if (profile?.name) {
+      studentName = profile.name;
+    }
+  } catch (err) {
+    console.error("Error fetching student profile for notification:", err);
+  }
+  
   const { error } = await supabase
     .from('notifications')
     .insert({
       user_id: coachId,
       student_id: studentId,
-      title: 'Öğrencinin Yeni Notu',
-      message: cleanMessage,
+      title: `${studentName} Yeni Bir Koç Notu İletti`,
+      message: `${studentName} yeni bir koç notu iletti: "${cleanMessage}"`,
       type: 'student_message',
       link: `/coach/student/${studentId}`
     });
@@ -1214,6 +1274,46 @@ export async function updateTaskCompletion(taskId: string, isCompleted: boolean)
   if (error) {
     console.error("updateTaskCompletion error:", error);
     throw error;
+  }
+
+  // Trigger notification to coach when completed
+  if (isCompleted) {
+    try {
+      const { data: task } = await supabase
+        .from('daily_tasks')
+        .select('program_id, subject, description')
+        .eq('id', taskId)
+        .single();
+
+      if (task) {
+        const { data: program } = await supabase
+          .from('weekly_programs')
+          .select('student_id, coach_id')
+          .eq('id', task.program_id)
+          .single();
+
+        if (program && program.coach_id) {
+          const { data: studentProfile } = await supabase
+            .from('profiles')
+            .select('name')
+            .eq('id', program.student_id)
+            .single();
+
+          const studentName = studentProfile?.name || 'Bir öğrenci';
+
+          await supabase.from('notifications').insert({
+            user_id: program.coach_id,
+            student_id: program.student_id,
+            title: `${studentName} Bir Görevi Tamamladı`,
+            message: `${studentName}, '${task.subject}' dersinin '${task.description}' görevini tamamladı.`,
+            type: 'task_completed',
+            link: `/coach/student/${program.student_id}`
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Error creating task completion notification:", e);
+    }
   }
 }
 

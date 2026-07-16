@@ -142,7 +142,7 @@ export function PomodoroTimer() {
   };
 
   return (
-    <div className="w-full overflow-hidden flex flex-col items-center justify-center space-y-4">
+    <div className="w-full max-w-[350px] sm:w-[400px] mx-auto overflow-hidden flex flex-col items-center justify-center space-y-4">
       {/* Akıllı Görev Seçici (Task Binder) */}
       <div className="w-full text-left">
         <label htmlFor="subject-select" className="text-xs font-semibold text-muted-foreground mb-1.5 block">
@@ -163,7 +163,7 @@ export function PomodoroTimer() {
       </div>
 
       {/* Sayaç */}
-      <p className="font-mono text-5xl font-semibold tabular-nums text-card-foreground">
+      <p className="font-mono text-5xl sm:text-7xl font-semibold tabular-nums text-card-foreground">
         {formatTime(seconds)}
       </p>
       

@@ -124,7 +124,15 @@ export default function ReportsPage() {
     if (!pdfRef.current || !selectedStudentId) return;
     setIsGenerating(true);
 
+    // Save original styles to restore later
+    const originalWidth = pdfRef.current.style.width;
+    const originalMaxWidth = pdfRef.current.style.maxWidth;
+
     try {
+      // Force standard A4 portrait virtual width (800px)
+      pdfRef.current.style.width = "800px";
+      pdfRef.current.style.maxWidth = "800px";
+
       const student = students.find(s => s.id === selectedStudentId);
       
       const canvas = await html2canvas(pdfRef.current, {
@@ -132,6 +140,7 @@ export default function ReportsPage() {
         useCORS: true,
         logging: false,
         backgroundColor: "#ffffff",
+        windowWidth: 800,
       });
       
       const imgData = canvas.toDataURL("image/jpeg", 1.0);
@@ -152,6 +161,11 @@ export default function ReportsPage() {
       console.error(error);
       alert("PDF oluşturulurken bir hata oluştu.");
     } finally {
+      // Restore original styles
+      if (pdfRef.current) {
+        pdfRef.current.style.width = originalWidth;
+        pdfRef.current.style.maxWidth = originalMaxWidth;
+      }
       setIsGenerating(false);
     }
   };
