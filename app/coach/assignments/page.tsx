@@ -218,7 +218,7 @@ export default function CoachAssignmentsPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-xl border border-border bg-card p-6 shadow-sm h-fit">
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-6 shadow-sm h-fit">
           <div className="flex items-center gap-2 mb-6 border-b border-border/50 pb-4">
             <Plus className="size-5 text-primary" />
             <h2 className="text-lg font-semibold tracking-tight">Yeni Ödev Ata</h2>
@@ -314,20 +314,20 @@ export default function CoachAssignmentsPage() {
               </div>
 
               {/* Mode Toggle */}
-              <div className="flex p-1 bg-muted/50 rounded-lg border border-border">
+              <div className="flex p-1 bg-muted/50 rounded-lg border border-border w-full">
                 <button
                   type="button"
                   onClick={() => setFormMode("custom")}
-                  className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-colors ${formMode === "custom" ? "bg-background shadow-sm border border-border" : "text-muted-foreground hover:text-foreground"}`}
+                  className={`flex-1 py-1.5 px-2 min-w-0 text-xs sm:text-sm font-medium rounded-md transition-colors truncate ${formMode === "custom" ? "bg-background shadow-sm border border-border" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   Manuel Ödev
                 </button>
                 <button
                   type="button"
                   onClick={() => setFormMode("library")}
-                  className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-1.5 ${formMode === "library" ? "bg-background shadow-sm border border-border text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                  className={`flex-1 py-1.5 px-2 min-w-0 text-xs sm:text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-1.5 truncate ${formMode === "library" ? "bg-background shadow-sm border border-border text-primary" : "text-muted-foreground hover:text-foreground"}`}
                 >
-                  <Book className="size-3.5" /> Kütüphaneden Seç
+                  <Book className="size-3.5 shrink-0" /> <span className="truncate">Kütüphaneden Seç</span>
                 </button>
               </div>
 
@@ -477,7 +477,7 @@ export default function CoachAssignmentsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Öncelik Seviyesi</label>
-                  <div className="flex gap-4">
+                  <div className="flex flex-wrap gap-x-4 gap-y-2">
                     {(["low", "medium", "high"] as const).map(p => (
                       <label key={p} className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -523,7 +523,7 @@ export default function CoachAssignmentsPage() {
           )}
         </section>
 
-        <section className="rounded-xl border border-border bg-card p-6 shadow-sm flex flex-col h-[600px] relative">
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-6 shadow-sm flex flex-col h-[600px] relative">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-border/50 pb-4">
             <div className="flex items-center gap-2">
               <Calendar className="size-5 text-accent" />
@@ -661,7 +661,7 @@ export default function CoachAssignmentsPage() {
                         <Trash2 className="size-4" />
                       </button>
                       
-                      <div className="flex items-center gap-2 mb-2 pr-8">
+                      <div className="flex flex-wrap items-center gap-2 mb-2 pr-8">
                         {isChampion && (
                            <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-500/40 bg-amber-500/20 text-amber-600 shadow-sm animate-pulse-slow">
                               ⭐ Şampiyon
