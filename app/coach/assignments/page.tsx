@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { User, Homework, getUsers, getHomeworks, saveHomework, getLibraryBooks, getLibraryTopics, LibraryBook, LibraryTopic, CurriculumSubject, getCurriculum, getGroups, getGroupMembers, Group, GroupMember } from "@/lib/auth";
 import { Plus, ListChecks, Calendar, AlertTriangle, AlertCircle, Trash2, Loader2, Book, ChevronDown, Check, X, Users } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,23 @@ export default function CoachAssignmentsPage() {
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedFilterStudentId, setSelectedFilterStudentId] = useState<string>("");
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const [filterSearchQuery, setFilterSearchQuery] = useState("");
+  const filterDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (filterDropdownRef.current && !filterDropdownRef.current.contains(event.target as Node)) {
+        setIsFilterDropdownOpen(false);
+      }
+    }
+    if (isFilterDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isFilterDropdownOpen]);
 
   // Form State
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
@@ -506,29 +523,99 @@ export default function CoachAssignmentsPage() {
           )}
         </section>
 
-        <section className="rounded-xl border border-border bg-card p-6 shadow-sm overflow-hidden flex flex-col h-[600px]">
+        <section className="rounded-xl border border-border bg-card p-6 shadow-sm flex flex-col h-[600px] relative">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-border/50 pb-4">
             <div className="flex items-center gap-2">
               <Calendar className="size-5 text-accent" />
               <h2 className="text-lg font-semibold tracking-tight">Atanmış Ödevler</h2>
             </div>
 
-            {/* Öğrenci Filtresi */}
-            <div className="flex items-center gap-2">
-              <label htmlFor="filter-student" className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+            {/* Arama Yapılabilir Öğrenci Filtresi */}
+            <div ref={filterDropdownRef} className="relative flex items-center gap-2 z-30">
+              <label className="text-xs font-medium text-muted-foreground whitespace-nowrap">
                 Öğrenci:
               </label>
-              <select
-                id="filter-student"
-                value={selectedFilterStudentId}
-                onChange={(e) => setSelectedFilterStudentId(e.target.value)}
-                className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary outline-none max-w-[180px]"
-              >
-                <option value="">Tümü</option>
-                {students.map(s => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+                  className="flex items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/50 transition-all focus:outline-none focus:ring-1 focus:ring-primary min-w-[120px] max-w-[160px] text-left"
+                >
+                  <span className="truncate">
+                    {selectedFilterStudentId 
+                      ? (students.find(s => s.id === selectedFilterStudentId)?.name || "Seçildi") 
+                      : "Tümü"}
+                  </span>
+                  <ChevronDown className="size-3 text-muted-foreground shrink-0" />
+                </button>
+
+                <AnimatePresence>
+                  {isFilterDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="absolute right-0 mt-1 w-56 max-h-60 overflow-hidden rounded-lg border border-border bg-card shadow-lg z-50 flex flex-col p-1"
+                    >
+                      {/* Arama Kutusu */}
+                      <div className="p-1 border-b border-border/50">
+                        <input
+                          type="text"
+                          placeholder="Öğrenci ara..."
+                          value={filterSearchQuery}
+                          onChange={(e) => setFilterSearchQuery(e.target.value)}
+                          className="w-full rounded-md border border-input bg-transparent px-2.5 py-1 text-xs shadow-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-primary"
+                          autoFocus
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+
+                      {/* Liste */}
+                      <div className="overflow-y-auto max-h-40 p-0.5 space-y-0.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedFilterStudentId("");
+                            setIsFilterDropdownOpen(false);
+                            setFilterSearchQuery("");
+                          }}
+                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-colors ${!selectedFilterStudentId ? "bg-primary/10 font-bold text-primary" : "text-foreground hover:bg-muted"}`}
+                        >
+                          <span>Tümü</span>
+                          {!selectedFilterStudentId && <Check className="size-3.5" />}
+                        </button>
+
+                        {students
+                          .filter(s => s.name.toLowerCase().includes(filterSearchQuery.toLowerCase()))
+                          .map(s => {
+                            const isSelected = selectedFilterStudentId === s.id;
+                            return (
+                              <button
+                                key={s.id}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedFilterStudentId(s.id);
+                                  setIsFilterDropdownOpen(false);
+                                  setFilterSearchQuery("");
+                                }}
+                                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-colors text-left ${isSelected ? "bg-primary/10 font-bold text-primary" : "text-foreground hover:bg-muted"}`}
+                              >
+                                <span className="truncate">{s.name}</span>
+                                {isSelected && <Check className="size-3.5" />}
+                              </button>
+                            );
+                          })}
+
+                        {students.filter(s => s.name.toLowerCase().includes(filterSearchQuery.toLowerCase())).length === 0 && (
+                          <div className="px-2.5 py-2 text-xs text-muted-foreground text-center italic">
+                            Eşleşen öğrenci bulunamadı.
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
 
