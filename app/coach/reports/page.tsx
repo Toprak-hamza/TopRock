@@ -124,18 +124,37 @@ export default function ReportsPage() {
     if (!pdfRef.current || !selectedStudentId) return;
     setIsGenerating(true);
 
-    // Save original styles to restore later
-    const originalWidth = pdfRef.current.style.width;
-    const originalMaxWidth = pdfRef.current.style.maxWidth;
-
+    let container: HTMLDivElement | null = null;
     try {
-      // Force standard A4 portrait virtual width (800px)
-      pdfRef.current.style.width = "800px";
-      pdfRef.current.style.maxWidth = "800px";
-
       const student = students.find(s => s.id === selectedStudentId);
+
+      // Clone original element
+      const originalElement = pdfRef.current;
+      const clone = originalElement.cloneNode(true) as HTMLDivElement;
+
+      // Set explicit styling to the clone so it looks like a clean A4 document
+      clone.style.width = "800px";
+      clone.style.maxWidth = "800px";
+      clone.style.minHeight = "1130px";
+      clone.style.boxSizing = "border-box";
+      clone.style.padding = "40px";
+      clone.style.backgroundColor = "#ffffff";
+      clone.style.color = "#000000";
+
+      // Create an offscreen wrapper
+      container = document.createElement("div");
+      container.style.position = "absolute";
+      container.style.left = "-9999px";
+      container.style.top = "0";
+      container.style.width = "800px";
+      container.style.height = "auto";
+      container.style.overflow = "visible";
+      container.style.backgroundColor = "#ffffff";
+
+      container.appendChild(clone);
+      document.body.appendChild(container);
       
-      const canvas = await html2canvas(pdfRef.current, {
+      const canvas = await html2canvas(clone, {
         scale: 2,
         useCORS: true,
         logging: false,
@@ -153,18 +172,37 @@ export default function ReportsPage() {
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      if (pdfHeight > pageHeight) {
+        let heightLeft = pdfHeight;
+        let position = 0;
+
+        // Page 1
+        pdf.addImage(imgData, "JPEG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+
+        // Subsequent pages
+        while (heightLeft > 0) {
+          position -= pageHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "JPEG", 0, position, pdfWidth, pdfHeight);
+          heightLeft -= pageHeight;
+        }
+      } else {
+        // Single page
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+      }
+
       pdf.save(`BitigEdu_Veli_Raporu_${student?.name || 'Ogrenci'}.pdf`);
       
     } catch (error) {
       console.error(error);
       alert("PDF oluşturulurken bir hata oluştu.");
     } finally {
-      // Restore original styles
-      if (pdfRef.current) {
-        pdfRef.current.style.width = originalWidth;
-        pdfRef.current.style.maxWidth = originalMaxWidth;
+      // Clean up the offscreen container
+      if (container && container.parentNode) {
+        container.parentNode.removeChild(container);
       }
       setIsGenerating(false);
     }
