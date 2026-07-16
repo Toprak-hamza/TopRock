@@ -543,13 +543,13 @@ export default function PomodoroPage() {
               </div>
  
               {/* Controls */}
-              <div className="mt-8 flex justify-center gap-3">
+              <div className="mt-8 grid grid-cols-2 gap-2.5 sm:flex sm:justify-center sm:gap-3 w-full max-w-sm sm:max-w-none mx-auto">
                 <button
                   type="button"
                   onClick={() => setIsActive(true)}
                   disabled={isActive}
                   className={cn(
-                    "inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white transition-all active:scale-95 disabled:opacity-40",
+                    "inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2.5 sm:px-5 sm:py-2.5 text-sm font-bold text-white transition-all active:scale-95 disabled:opacity-40 w-full sm:w-auto",
                     isBreakMode ? "bg-teal-600 hover:bg-teal-500" : "bg-orange-600 hover:bg-orange-500"
                   )}
                 >
@@ -560,7 +560,7 @@ export default function PomodoroPage() {
                   type="button"
                   onClick={() => setIsActive(false)}
                   disabled={!isActive}
-                  className="inline-flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-5 py-2.5 text-sm font-bold hover:bg-muted transition-all active:scale-95 disabled:opacity-40"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-muted/50 px-3.5 py-2.5 sm:px-5 sm:py-2.5 text-sm font-bold hover:bg-muted transition-all active:scale-95 disabled:opacity-40 w-full sm:w-auto"
                 >
                   <Pause className="size-4" /> Duraklat
                 </button>
@@ -571,7 +571,7 @@ export default function PomodoroPage() {
                     setIsActive(false);
                     setSeconds(isBreakMode ? 300 : 1500);
                   }}
-                  className="inline-flex items-center gap-2 rounded-lg border border-border bg-secondary/30 px-5 py-2.5 text-sm font-bold hover:bg-secondary/55 transition-all active:scale-95"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-secondary/30 px-3.5 py-2.5 sm:px-5 sm:py-2.5 text-sm font-bold hover:bg-secondary/55 transition-all active:scale-95 w-full sm:w-auto"
                 >
                   <RotateCcw className="size-4" /> Sıfırla
                 </button>
@@ -583,7 +583,7 @@ export default function PomodoroPage() {
                     handleSave();
                   }}
                   disabled={(seconds === (isBreakMode ? 300 : 1500)) || isSaving}
-                  className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-500 transition-all active:scale-95 disabled:opacity-40"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3.5 py-2.5 sm:px-5 sm:py-2.5 text-sm font-bold text-white hover:bg-emerald-500 transition-all active:scale-95 disabled:opacity-40 w-full sm:w-auto"
                 >
                   {isSaving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Kaydet
                 </button>
