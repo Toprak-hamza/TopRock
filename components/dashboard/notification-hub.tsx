@@ -22,9 +22,9 @@ export function NotificationHub() {
       const data = await getNotifications(user.id);
       if (user.role === "coach") {
         // Coach sees student messages, task completions, and homework completions
-        setNotifications(data.filter(n => 
-          n.type === "student_message" || 
-          n.type === "task_completed" || 
+        setNotifications(data.filter(n =>
+          n.type === "student_message" ||
+          n.type === "task_completed" ||
           n.type === "homework_completed"
         ));
       } else {
@@ -64,7 +64,7 @@ export function NotificationHub() {
       supabase.removeChannel(channel);
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleMarkAsRead = async (id: string, e: React.MouseEvent) => {
@@ -101,7 +101,7 @@ export function NotificationHub() {
         console.error(err);
       }
     }
-    
+
     if (notification.link) {
       router.push(notification.link);
       setIsOpen(false);
