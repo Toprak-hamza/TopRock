@@ -231,7 +231,7 @@ export default function CoachAssignmentsPage() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground flex items-center justify-between">
+                <label className="text-sm font-medium text-muted-foreground flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                   <span>Öğrenci Seç {selectedStudentIds.length > 0 && <span className="text-xs text-primary font-bold ml-1">({selectedStudentIds.length})</span>}</span>
                   {groups.length > 0 && (
                     <span className="text-xs text-muted-foreground">Veya sınıf ekle:</span>
@@ -333,7 +333,7 @@ export default function CoachAssignmentsPage() {
 
               {formMode === "custom" ? (
                 <>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2 relative">
                       <label className="text-sm font-medium text-muted-foreground">Ders Başlığı</label>
                       <div className="relative">
@@ -474,7 +474,7 @@ export default function CoachAssignmentsPage() {
                 </>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Öncelik Seviyesi</label>
                   <div className="flex gap-4">
