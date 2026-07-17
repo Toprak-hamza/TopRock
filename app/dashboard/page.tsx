@@ -26,15 +26,15 @@ export default function DashboardPage() {
 
         <div className="grid gap-6 lg:grid-cols-3 items-start">
           {/* Sol/Orta Kolon: Günün Görevleri, Ödevleri ve Duyurular */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6 min-w-0">
             <GununGorevleri />
             <GununOdevleri />
             <AnnouncementList />
           </div>
 
           {/* Sağ Kolon: Pomodoro Sayacı */}
-          <div className="lg:col-span-1">
-            <div className="rounded-xl border border-border bg-card p-6 shadow-sm text-center">
+          <div className="lg:col-span-1 min-w-0">
+            <div className="rounded-xl border border-border bg-card p-5 sm:p-6 shadow-sm flex flex-col items-center text-center">
               <h3 className="text-sm font-semibold text-muted-foreground mb-4">Pomodoro Çalışma Seansı</h3>
               <PomodoroTimer />
             </div>

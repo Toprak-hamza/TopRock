@@ -142,7 +142,7 @@ export function PomodoroTimer() {
   };
 
   return (
-    <div className="w-full max-w-[350px] sm:w-[400px] mx-auto overflow-hidden flex flex-col items-center justify-center space-y-4">
+    <div className="w-full max-w-[280px] sm:max-w-[320px] mx-auto overflow-hidden flex flex-col items-center justify-center space-y-4">
       {/* Akıllı Görev Seçici (Task Binder) */}
       <div className="w-full text-left">
         <label htmlFor="subject-select" className="text-xs font-semibold text-muted-foreground mb-1.5 block">
@@ -152,7 +152,7 @@ export function PomodoroTimer() {
           id="subject-select"
           value={selectedSubjectId}
           onChange={(e) => setSelectedSubjectId(e.target.value)}
-          className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm transition-colors focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+          className="w-full rounded-lg border border-input bg-background px-2.5 sm:px-3 py-2 text-xs sm:text-sm text-foreground shadow-sm transition-colors focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
         >
           {subjects.map((sub) => (
             <option key={sub.id} value={sub.id}>
@@ -175,18 +175,18 @@ export function PomodoroTimer() {
             setIsActive(true);
           }}
           disabled={isActive}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-600 px-3 py-2 text-sm font-medium text-white hover:bg-orange-500 transition-colors disabled:opacity-40 w-full"
+          className="inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg bg-orange-600 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white hover:bg-orange-500 transition-colors disabled:opacity-40 w-full"
         >
-          <Play className="size-4" /> Başlat
+          <Play className="size-3.5 sm:size-4" /> Başlat
         </button>
 
         <button
           type="button"
           onClick={() => setIsActive(false)}
           disabled={!isActive}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-input bg-muted px-3 py-2 text-sm font-medium hover:bg-muted/80 transition-colors disabled:opacity-40 w-full text-muted-foreground"
+          className="inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg border border-input bg-muted px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium hover:bg-muted/80 transition-colors disabled:opacity-40 w-full text-muted-foreground"
         >
-          <Pause className="size-4" /> Duraklat
+          <Pause className="size-3.5 sm:size-4" /> Duraklat
         </button>
 
         <button
@@ -195,9 +195,9 @@ export function PomodoroTimer() {
             setIsActive(false);
             setSeconds(1500);
           }}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-input bg-secondary px-3 py-2 text-sm font-medium hover:bg-secondary/80 transition-colors w-full text-secondary-foreground"
+          className="inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg border border-input bg-secondary px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium hover:bg-secondary/80 transition-colors w-full text-secondary-foreground"
         >
-          <RotateCcw className="size-4" /> Sıfırla
+          <RotateCcw className="size-3.5 sm:size-4" /> Sıfırla
         </button>
 
         <button
@@ -207,9 +207,9 @@ export function PomodoroTimer() {
             handleSave();
           }}
           disabled={seconds === 1500 || isSaving}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-500 transition-colors disabled:opacity-40 w-full"
+          className="inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg bg-emerald-600 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white hover:bg-emerald-500 transition-colors disabled:opacity-40 w-full"
         >
-          {isSaving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Kaydet
+          {isSaving ? <Loader2 className="size-3.5 sm:size-4 animate-spin" /> : <Save className="size-3.5 sm:size-4" />} Kaydet
         </button>
       </div>
 
