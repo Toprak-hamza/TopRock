@@ -1352,3 +1352,174 @@ export async function updateTaskCompletion(taskId: string, isCompleted: boolean)
   }
 }
 
+// ----------------------------------------------------
+// Hazır Şablon Planlar (Study Plan Templates)
+// ----------------------------------------------------
+
+export interface TemplateTaskItem {
+  dayOfWeek: number; // 1 (Pzt) .. 7 (Paz)
+  subject: string;
+  description: string;
+  targetQuestions: number;
+  targetDuration: number;
+  sourceBook?: string;
+  subTopic?: string;
+  pageRange?: string;
+  coachNote?: string;
+}
+
+export interface StudyPlanTemplate {
+  id: string;
+  coachId: string;
+  title: string;
+  description: string;
+  scheduleData: TemplateTaskItem[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export function mapStudyPlanTemplate(t: any): StudyPlanTemplate {
+  return {
+    id: t.id,
+    coachId: t.coach_id,
+    title: t.title,
+    description: t.description || '',
+    scheduleData: typeof t.schedule_data === 'string' ? JSON.parse(t.schedule_data) : (t.schedule_data || []),
+    createdAt: t.created_at,
+    updatedAt: t.updated_at,
+  };
+}
+
+export async function getStudyPlanTemplates(coachId: string): Promise<StudyPlanTemplate[]> {
+  const { data, error } = await supabase
+    .from('study_plan_templates')
+    .select('*')
+    .eq('coach_id', coachId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error("getStudyPlanTemplates error:", error);
+    throw error;
+  }
+  return (data || []).map(mapStudyPlanTemplate);
+}
+
+export async function saveStudyPlanTemplate(template: Partial<StudyPlanTemplate>): Promise<StudyPlanTemplate> {
+  const cleanTitle = sanitizeText(template.title || '');
+  const cleanDescription = sanitizeText(template.description || '');
+
+  const payload = {
+    coach_id: template.coachId,
+    title: cleanTitle,
+    description: cleanDescription,
+    schedule_data: template.scheduleData || [],
+    updated_at: new Date().toISOString()
+  };
+
+  if (template.id && !template.id.startsWith('new_')) {
+    const { data, error } = await supabase
+      .from('study_plan_templates')
+      .update(payload)
+      .eq('id', template.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("saveStudyPlanTemplate update error:", error);
+      throw error;
+    }
+    return mapStudyPlanTemplate(data);
+  } else {
+    const { data, error } = await supabase
+      .from('study_plan_templates')
+      .insert(payload)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("saveStudyPlanTemplate insert error:", error);
+      throw error;
+    }
+    return mapStudyPlanTemplate(data);
+  }
+}
+
+export async function deleteStudyPlanTemplate(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('study_plan_templates')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error("deleteStudyPlanTemplate error:", error);
+    throw error;
+  }
+}
+
+export async function applyTemplateToStudent(
+  templateId: string,
+  studentId: string,
+  coachId: string,
+  weekStartDate: string,
+  clearExisting: boolean = false
+): Promise<void> {
+  // 1. Fetch template
+  const { data: tData, error: tErr } = await supabase
+    .from('study_plan_templates')
+    .select('*')
+    .eq('id', templateId)
+    .single();
+
+  if (tErr || !tData) {
+    throw new Error("Şablon bulunamadı.");
+  }
+
+  const template = mapStudyPlanTemplate(tData);
+
+  // 2. Get or create student's weekly program
+  const program = await getOrCreateWeeklyProgram(studentId, coachId, weekStartDate);
+
+  // 3. Clear existing tasks if requested
+  if (clearExisting) {
+    await supabase.from('daily_tasks').delete().eq('program_id', program.id);
+  }
+
+  // 4. Batch insert template tasks into student's daily_tasks
+  if (template.scheduleData && template.scheduleData.length > 0) {
+    const taskInsertPayloads = template.scheduleData.map(item => ({
+      program_id: program.id,
+      day_of_week: item.dayOfWeek,
+      subject: sanitizeText(item.subject),
+      description: sanitizeText(item.description),
+      target_questions: item.targetQuestions || 0,
+      target_duration: item.targetDuration || 0,
+      is_completed: false,
+      source_book: sanitizeText(item.sourceBook || ''),
+      sub_topic: sanitizeText(item.subTopic || ''),
+      page_range: sanitizeText(item.pageRange || ''),
+      coach_note: sanitizeText(item.coachNote || '')
+    }));
+
+    const { error: insertErr } = await supabase.from('daily_tasks').insert(taskInsertPayloads);
+    if (insertErr) {
+      console.error("applyTemplateToStudent task insert error:", insertErr);
+      throw insertErr;
+    }
+  }
+
+  // 5. Send notification to student
+  try {
+    await supabase.from('notifications').insert({
+      user_id: studentId,
+      student_id: studentId,
+      title: 'Yeni Çalışma Programı Atandı',
+      message: `Koçunuz size '${template.title}' şablon planını uygulayarak haftalık programınızı güncelledi.`,
+      type: 'program',
+      link: '/dashboard'
+    });
+  } catch (e) {
+    console.error("Error creating program assignment notification:", e);
+  }
+}
+
+

@@ -8,7 +8,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationHub } from "@/components/dashboard/notification-hub";
 import { cn } from "@/lib/utils";
 import { logout } from "@/lib/auth";
-import { Users, LogOut, Loader2, BookOpen, Library, Layers, Megaphone, Menu, X, FileText } from "lucide-react";
+import { Users, LogOut, Loader2, BookOpen, Library, Layers, Megaphone, Menu, X, FileText, Copy } from "lucide-react";
 
 export default function CoachLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -98,6 +98,13 @@ export default function CoachLayout({ children }: { children: React.ReactNode })
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-rose-600 bg-rose-500/10 transition-colors hover:bg-rose-500/20 mt-1"
           >
             <Megaphone className="h-5 w-5" /> Duyurular
+          </Link>
+          <Link
+            href="/coach/templates"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-purple-600 bg-purple-500/10 transition-colors hover:bg-purple-500/20 mt-1"
+          >
+            <Copy className="h-5 w-5" /> Hazır Şablonlar
           </Link>
           <Link
             href="/coach/reports"
