@@ -22,6 +22,34 @@ function updateAuthCookies(session: any, role: string | null) {
   }
 }
 
+async function fetchOrCreateProfile(sessionUser: any) {
+  let { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', sessionUser.id)
+    .single();
+
+  if (!profile) {
+    const metaRole = sessionUser.user_metadata?.role || (sessionUser.email?.includes('coach') ? 'coach' : 'student');
+    const metaName = sessionUser.user_metadata?.name || sessionUser.email?.split('@')[0] || 'Kullanıcı';
+
+    const { data: newProfile } = await supabase
+      .from('profiles')
+      .upsert({
+        id: sessionUser.id,
+        email: sessionUser.email,
+        name: metaName,
+        role: metaRole,
+        coach_id: sessionUser.user_metadata?.coachId || null
+      })
+      .select()
+      .single();
+
+    profile = newProfile;
+  }
+  return profile;
+}
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,11 +71,7 @@ export function useAuth() {
           return;
         }
 
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+        const profile = await fetchOrCreateProfile(session.user);
 
         if (profile) {
           const mapped = mapProfileToUser(profile);
@@ -77,11 +101,7 @@ export function useAuth() {
         }
 
         setIsLoading(true);
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+        const profile = await fetchOrCreateProfile(session.user);
         if (profile) {
           const mapped = mapProfileToUser(profile);
           setUser(mapped);

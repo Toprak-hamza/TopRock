@@ -46,11 +46,12 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    console.log(`[Login] Attempting sign-in for role: ${role}, email: ${email}`);
+    const cleanEmail = email.trim().toLowerCase();
+    console.log(`[Login] Attempting sign-in for role: ${role}, email: ${cleanEmail}`);
 
     try {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
+        email: cleanEmail,
         password,
       });
 
@@ -64,13 +65,37 @@ export default function LoginPage() {
       console.log("[Login] Supabase Authenticated successfully. User:", data.user?.id);
 
       // Verify profile availability under active RLS policy
-      const { data: profile, error: profileError } = await supabase
+      let { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", data.user.id)
         .single();
 
-      if (profileError) {
+      // Fallback: If profile record is missing in DB, attempt to auto-create from auth metadata
+      if (!profile || profileError) {
+        console.warn("[Login] Profile missing or fetch error, auto-upserting profile...", profileError);
+        const metaRole = data.user.user_metadata?.role || role;
+        const metaName = data.user.user_metadata?.name || (role === "coach" ? "Koç Kullanıcı" : "Öğrenci Kullanıcı");
+
+        const { data: newProfile, error: upsertError } = await supabase
+          .from("profiles")
+          .upsert({
+            id: data.user.id,
+            email: data.user.email || cleanEmail,
+            name: metaName,
+            role: metaRole,
+            coach_id: data.user.user_metadata?.coachId || null
+          })
+          .select()
+          .single();
+
+        if (!upsertError && newProfile) {
+          profile = newProfile;
+          console.log("[Login] Profile successfully auto-created:", profile);
+        }
+      }
+
+      if (!profile) {
         console.error("[Login] Profiles Table Query Error (Check RLS Policies):", profileError);
         setError("Profil verisi çekilemedi. Lütfen veritabanı RLS izinlerini kontrol edin.");
         setLoading(false);
