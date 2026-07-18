@@ -121,9 +121,12 @@ export default function CoachLayout({ children }: { children: React.ReactNode })
             <FileText className="h-5 w-5" /> Veli Raporları
           </Link>
         </nav>
-        <div className="border-t border-border/50 p-4">
-          <div className="mb-4 text-sm font-medium text-muted-foreground truncate">
-            {user.name}
+        <div className="border-t border-border/50 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-medium text-muted-foreground truncate max-w-[140px]">
+              {user.name}
+            </div>
+            <ThemeToggle />
           </div>
           <button
             onClick={handleLogout}
@@ -137,17 +140,17 @@ export default function CoachLayout({ children }: { children: React.ReactNode })
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col h-dvh overflow-hidden w-full">
         {/* Topbar */}
-        <header className="relative z-50 flex h-16 shrink-0 items-center justify-between border-b border-border bg-background/80 px-6 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
+        <header className="relative z-50 flex h-16 shrink-0 items-center justify-between border-b border-border bg-background/80 px-3 sm:px-6 backdrop-blur-sm">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="p-2 -ml-2 text-muted-foreground hover:bg-muted rounded-lg md:hidden"
+              className="p-2 -ml-1 text-muted-foreground hover:bg-muted rounded-lg md:hidden shrink-0"
             >
               <Menu className="size-6" />
             </button>
-            <span className="text-lg font-bold tracking-tight md:hidden">Koç Paneli</span>
+            <span className="text-base sm:text-lg font-bold tracking-tight md:hidden truncate">Koç Paneli</span>
           </div>
-          <div className="flex items-center gap-3 ml-auto">
+          <div className="flex items-center gap-2 sm:gap-3 ml-auto shrink-0">
             <NotificationHub />
             <ThemeToggle />
           </div>

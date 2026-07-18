@@ -314,7 +314,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-dvh flex items-center justify-center p-6 bg-gradient-to-br from-background to-muted/20">
-      <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+      <div className="fixed right-4 top-4 sm:right-6 sm:top-6 z-50">
         <ThemeToggle />
       </div>
 

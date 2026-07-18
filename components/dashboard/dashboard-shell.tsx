@@ -197,14 +197,15 @@ export function DashboardShell({
           </div>
         )}
 
-        <div className="border-t border-white/10 p-4">
+        <div className="border-t border-white/10 p-4 flex items-center justify-between">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-red-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-red-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
           >
             <LogOut className="size-[18px] shrink-0" aria-hidden />
             Çıkış Yap
           </button>
+          <ThemeToggle />
         </div>
       </aside>
 
@@ -217,24 +218,24 @@ export function DashboardShell({
           )}
         />
 
-        <header className="relative z-50 flex flex-wrap items-center justify-between gap-4 border-b border-border bg-background/80 px-4 md:px-8 py-5 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
+        <header className="relative z-50 flex items-center justify-between gap-2 border-b border-border bg-background/80 px-3 sm:px-6 md:px-8 py-3.5 sm:py-5 backdrop-blur-sm">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden p-2 -ml-2 text-muted-foreground hover:bg-muted rounded-lg"
+              className="md:hidden p-2 -ml-1 text-muted-foreground hover:bg-muted rounded-lg shrink-0"
             >
               <Menu className="size-6" />
             </button>
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              {title}
-            </h1>
-            {subtitle ? (
-              <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
-            ) : null}
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-2xl font-semibold tracking-tight truncate">
+                {title}
+              </h1>
+              {subtitle ? (
+                <p className="hidden sm:block mt-0.5 text-xs sm:text-sm text-muted-foreground truncate">{subtitle}</p>
+              ) : null}
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
             {headerActions}
             <NotificationHub />
             <ThemeToggle />
