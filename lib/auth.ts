@@ -1254,7 +1254,7 @@ export async function saveDailyTask(task: Partial<DailyTask>) {
   const cleanPageRange = sanitizeText(task.pageRange || '');
   const cleanCoachNote = sanitizeText(task.coachNote || '');
 
-  const payload = {
+  const fullPayload = {
     program_id: task.programId,
     day_of_week: task.dayOfWeek,
     subject: cleanSubject,
@@ -1268,19 +1268,43 @@ export async function saveDailyTask(task: Partial<DailyTask>) {
     coach_note: cleanCoachNote
   };
 
+  const basicPayload = {
+    program_id: task.programId,
+    day_of_week: task.dayOfWeek,
+    subject: cleanSubject,
+    description: cleanDescription,
+    target_questions: task.targetQuestions || 0,
+    target_duration: task.targetDuration || 0,
+    is_completed: task.isCompleted || false
+  };
+
   if (task.id) {
-    const { error } = await supabase
+    let { error } = await supabase
       .from('daily_tasks')
-      .update(payload)
+      .update(fullPayload)
       .eq('id', task.id);
+
+    if (error && (error.message?.includes("column") || error.message?.includes("schema cache"))) {
+      console.warn("Retrying task update with basic schema columns...", error);
+      const fallback = await supabase.from('daily_tasks').update(basicPayload).eq('id', task.id);
+      error = fallback.error;
+    }
+
     if (error) {
       console.error("saveDailyTask update error:", error);
       throw error;
     }
   } else {
-    const { error } = await supabase
+    let { error } = await supabase
       .from('daily_tasks')
-      .insert(payload);
+      .insert(fullPayload);
+
+    if (error && (error.message?.includes("column") || error.message?.includes("schema cache"))) {
+      console.warn("Retrying task insert with basic schema columns...", error);
+      const fallback = await supabase.from('daily_tasks').insert(basicPayload);
+      error = fallback.error;
+    }
+
     if (error) {
       console.error("saveDailyTask insert error:", error);
       throw error;
@@ -1500,7 +1524,23 @@ export async function applyTemplateToStudent(
       coach_note: sanitizeText(item.coachNote || '')
     }));
 
-    const { error: insertErr } = await supabase.from('daily_tasks').insert(taskInsertPayloads);
+    let { error: insertErr } = await supabase.from('daily_tasks').insert(taskInsertPayloads);
+
+    if (insertErr && (insertErr.message?.includes("column") || insertErr.message?.includes("schema cache"))) {
+      console.warn("Retrying applyTemplateToStudent insert with basic schema columns...", insertErr);
+      const fallbackPayloads = template.scheduleData.map(item => ({
+        program_id: program.id,
+        day_of_week: item.dayOfWeek,
+        subject: sanitizeText(item.subject),
+        description: sanitizeText(item.description),
+        target_questions: item.targetQuestions || 0,
+        target_duration: item.targetDuration || 0,
+        is_completed: false
+      }));
+      const fallbackResult = await supabase.from('daily_tasks').insert(fallbackPayloads);
+      insertErr = fallbackResult.error;
+    }
+
     if (insertErr) {
       console.error("applyTemplateToStudent task insert error:", insertErr);
       throw insertErr;
