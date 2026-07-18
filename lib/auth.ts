@@ -631,6 +631,41 @@ export async function saveCurriculum(curriculum: CurriculumSubject[]) {
   await supabase.from('curriculum_subjects').upsert(payloads);
 }
 
+export async function getStudentCurriculumProgress(studentId: string): Promise<number> {
+  try {
+    const curriculum = await getCurriculum();
+    let totalTopics = 0;
+    curriculum.forEach(sub => {
+      if (Array.isArray(sub.topics)) {
+        totalTopics += sub.topics.length;
+      }
+    });
+
+    if (totalTopics === 0) return 0;
+    const maxPoints = totalTopics * 6; // 3 steps (study, solve, review) * 2 points max per step
+
+    const { data: tpData, error } = await supabase
+      .from('topics_progress')
+      .select('*')
+      .eq('student_id', studentId);
+
+    if (error || !tpData || tpData.length === 0) return 0;
+
+    let earnedPoints = 0;
+    tpData.forEach(row => {
+      const states = typeof row.states === 'string' ? JSON.parse(row.states) : row.states;
+      if (states) {
+        earnedPoints += (Number(states.study) || 0) + (Number(states.solve) || 0) + (Number(states.review) || 0);
+      }
+    });
+
+    return Math.min(100, Math.round((earnedPoints / maxPoints) * 100));
+  } catch (e) {
+    console.error("Error calculating student curriculum progress:", e);
+    return 0;
+  }
+}
+
 export async function deleteStudentCascading(studentId: string) {
   // Wait, RPC edge function would be better, but for now we just delete from profiles
   // RLS cascading constraints in DB handle homeworks, exams, etc.

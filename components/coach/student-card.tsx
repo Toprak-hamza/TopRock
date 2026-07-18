@@ -1,4 +1,4 @@
-import { User, Invitation, getHomeworks } from "@/lib/auth";
+import { User, Invitation, getHomeworks, getStudentCurriculumProgress, getDetailedExams } from "@/lib/auth";
 import { TrendingUp, TrendingDown, Eye, Copy, CheckCircle2, Clock, ListChecks, Calendar, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -21,51 +21,43 @@ export function StudentCard({ student, invitation, onDeleteInvitation }: Student
 
   useEffect(() => {
     if (student) {
-      if (typeof window !== "undefined") {
-        const matrixDataStr = localStorage.getItem("bitigedu_matrix_progress");
-        if (matrixDataStr) {
-          const matrixData = JSON.parse(matrixDataStr);
-          setProgress(matrixData[student.id] || 0);
-        }
+      const loadStudentMetrics = async () => {
+        try {
+          // 1. Müfredat İlerlemesini Supabase'den canlı hesapla
+          const currProgress = await getStudentCurriculumProgress(student.id);
+          setProgress(currProgress);
 
-        const examsStr = localStorage.getItem("bitigedu_exams");
-        if (examsStr) {
-          const examsData = JSON.parse(examsStr);
-          const studentExams = examsData[student.id];
+          // 2. Net Trendini Supabase Sınavlar tablosundan hesapla
+          const studentExams = await getDetailedExams(student.id);
           if (studentExams && studentExams.length >= 2) {
-            const last = studentExams[studentExams.length - 1];
-            const prev = studentExams[studentExams.length - 2];
+            const last = studentExams[0];
+            const prev = studentExams[1];
             
             let sum = 0;
-            let count = 0;
-            // Get average of last 3 mapping from the end
-            for (let i = Math.max(0, studentExams.length - 3); i < studentExams.length; i++) {
-              sum += studentExams[i].net;
-              count++;
+            let count = Math.min(3, studentExams.length);
+            for (let i = 0; i < count; i++) {
+              sum += studentExams[i].overallNet;
             }
             
             const avg = count > 0 ? sum / count : 0;
-            const isUp = last.net >= prev.net;
+            const isUp = last.overallNet >= prev.overallNet;
             setNetTrend({ value: Number(avg.toFixed(1)), isUp });
           } else if (studentExams && studentExams.length === 1) {
-            setNetTrend({ value: studentExams[0].net, isUp: true });
+            setNetTrend({ value: studentExams[0].overallNet, isUp: true });
+          } else {
+            setNetTrend(null);
           }
-        }
 
-        const fetchHwStats = async () => {
-          try {
-            const allHw = await getHomeworks() || [];
-            const studentHw = allHw.filter(h => h.studentId === student.id);
-            const completedHw = studentHw.filter(h => h.completed).length;
-            setHwStats({ total: studentHw.length, completed: completedHw });
-          } catch (e) {
-            console.error("Error fetching HW for student card:", e);
-            setHwStats({ total: 0, completed: 0 });
-          }
-        };
-        
-        fetchHwStats();
-      }
+          // 3. Ödev İstatistiklerini Çek
+          const studentHw = await getHomeworks(student.id) || [];
+          const completedHw = studentHw.filter(h => h.completed).length;
+          setHwStats({ total: studentHw.length, completed: completedHw });
+        } catch (e) {
+          console.error("Error fetching student metrics for card:", e);
+        }
+      };
+
+      loadStudentMetrics();
     }
   }, [student]);
 

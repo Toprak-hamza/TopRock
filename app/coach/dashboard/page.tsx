@@ -62,6 +62,9 @@ export default function CoachDashboardPage() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `coach_id=eq.${user.id}` }, () => {
         loadData();
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'topics_progress' }, () => {
+        loadData();
+      })
       .subscribe();
 
     return () => {

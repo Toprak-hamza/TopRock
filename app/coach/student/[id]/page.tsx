@@ -76,10 +76,13 @@ export default function StudentProfilePage() {
   const [badgeLoading, setBadgeLoading] = useState(false);
 
   const loadData = async (targetStudent: User) => {
-    const matrixDataStr = localStorage.getItem("bitigedu_matrix_progress");
-    if (matrixDataStr) {
-      const matrixData = JSON.parse(matrixDataStr);
-      setMatrixProgress(matrixData[targetStudent.id] || 0);
+    try {
+      const { getStudentCurriculumProgress } = await import("@/lib/auth");
+      const prog = await getStudentCurriculumProgress(targetStudent.id);
+      setMatrixProgress(prog);
+    } catch (e) {
+      console.error("Error fetching student matrix progress:", e);
+      setMatrixProgress(0);
     }
 
     try {
