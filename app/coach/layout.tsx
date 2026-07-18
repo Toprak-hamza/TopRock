@@ -8,7 +8,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationHub } from "@/components/dashboard/notification-hub";
 import { cn } from "@/lib/utils";
 import { logout } from "@/lib/auth";
-import { Users, LogOut, Loader2, BookOpen, Library, Layers, Megaphone, Menu, X, FileText, Copy } from "lucide-react";
+import { Users, LogOut, Loader2, BookOpen, Library, Layers, Megaphone, Menu, X, FileText, Copy, CalendarDays } from "lucide-react";
 
 export default function CoachLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -84,6 +84,13 @@ export default function CoachLayout({ children }: { children: React.ReactNode })
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-foreground bg-primary/10 transition-colors hover:bg-primary/20 mt-1"
           >
             <BookOpen className="h-5 w-5" /> Ödevlendir
+          </Link>
+          <Link
+            href="/coach/schedule"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sky-600 bg-sky-500/10 transition-colors hover:bg-sky-500/20 mt-1"
+          >
+            <CalendarDays className="h-5 w-5" /> Haftalık Program
           </Link>
           <Link
             href="/coach/curriculum"

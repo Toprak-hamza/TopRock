@@ -150,7 +150,7 @@ export function StudentCard({ student, invitation, onDeleteInvitation }: Student
             <Eye className="size-4" /> Profili İncele
           </Link>
           <Link
-            href={`/coach/schedule/${student.id}`}
+            href={`/coach/schedule?studentId=${student.id}`}
             className="flex items-center justify-center rounded-lg bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-500 transition-colors hover:bg-emerald-500/20"
             title="Program Ata"
           >
